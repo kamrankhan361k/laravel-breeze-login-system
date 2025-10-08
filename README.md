@@ -1,61 +1,249 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Multi-Auth System with Laravel Breeze
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A complete multi-authentication system built with Laravel Breeze featuring **5 different user types** with separate login/registration systems and dedicated dashboards.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **5 User Types:** User, Seller, Admin, Audit, Staff  
+- **Separate Authentication:** Each user type has dedicated login/registration  
+- **Custom Dashboards:** Tailored dashboard for each user role  
+- **Middleware Protection:** Route protection for each user type  
+- **Breeze Integration:** Built on Laravel Breeze authentication scaffolding  
+- **Responsive Design:** Modern, mobile-friendly interface  
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🧑‍💻 User Types & Access
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| User Type | Login URL | Registration URL | Dashboard URL |
+|------------|------------|------------------|----------------|
+| User | `/login` | `/register` | `/dashboard` |
+| Seller | `/seller/login` | `/seller/register` | `/seller/dashboard` |
+| Admin | `/admin/login` | `/admin/register` | `/admin/dashboard` |
+| Audit | `/audit/login` | `/audit/register` | `/audit/dashboard` |
+| Staff | `/staff/login` | `/staff/register` | `/staff/dashboard` |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ⚙️ Installation
 
-## Laravel Sponsors
+### Prerequisites
+- PHP 8.1 or higher  
+- Composer  
+- Node.js & NPM  
+- MySQL Database  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+### Step-by-Step Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+#### 1️⃣ Create new Laravel project
+```bash
+composer create-project laravel/laravel multi-auth-system
+cd multi-auth-system
+```
 
-## Contributing
+#### 2️⃣ Install Laravel Breeze
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install
+npm install && npm run build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### 3️⃣ Setup database in `.env` file
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=multi_auth_system
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Code of Conduct
+#### 4️⃣ Create models and migrations
+```bash
+php artisan make:model Seller -m
+php artisan make:model Admin -m
+php artisan make:model Audit -m
+php artisan make:model Staff -m
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### 5️⃣ Run all migrations
+```bash
+php artisan migrate
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🧩 Configuration
 
-## License
+### Update `config/auth.php` with multi-guard setup
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```php
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
+    ],
+    'seller' => [
+        'driver' => 'session',
+        'provider' => 'sellers',
+    ],
+    'admin' => [
+        'driver' => 'session',
+        'provider' => 'admins',
+    ],
+    'audit' => [
+        'driver' => 'session',
+        'provider' => 'audits',
+    ],
+    'staff' => [
+        'driver' => 'session',
+        'provider' => 'staff',
+    ],
+],
+
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,
+    ],
+    'sellers' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Seller::class,
+    ],
+    'admins' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Admin::class,
+    ],
+    'audits' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Audit::class,
+    ],
+    'staff' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Staff::class,
+    ],
+],
+```
+
+---
+
+## 🧱 Middleware Setup
+
+Register custom middleware in `app/Http/Kernel.php`:
+
+```php
+protected $middlewareAliases = [
+    // ... existing middleware
+    'seller' => \App\Http\Middleware\SellerMiddleware::class,
+    'admin' => \App\Http\Middleware\AdminMiddleware::class,
+    'audit' => \App\Http\Middleware\AuditMiddleware::class,
+    'staff' => \App\Http\Middleware\StaffMiddleware::class,
+];
+```
+
+---
+
+## 🛣️ Routes Setup
+
+Update `routes/web.php` with multi-auth routes:
+
+```php
+// Seller routes
+Route::prefix('seller')->name('seller.')->group(function () {
+    Route::get('/login', [SellerAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [SellerAuthController::class, 'login']);
+    Route::get('/register', [SellerAuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [SellerAuthController::class, 'register']);
+    Route::post('/logout', [SellerAuthController::class, 'logout'])->name('logout');
+    
+    Route::middleware(['seller'])->group(function () {
+        Route::get('/dashboard', [SellerDashboardController::class, 'index'])->name('dashboard');
+    });
+});
+
+// Repeat similar structure for admin, audit, and staff routes
+```
+
+---
+
+## 🧰 Running the Application
+
+Run migrations:
+```bash
+php artisan migrate
+```
+
+Build frontend assets:
+```bash
+npm run build
+```
+
+Serve the application:
+```bash
+php artisan serve
+```
+
+### Access the application at:
+- Main page → http://localhost:8000  
+- Seller → http://localhost:8000/seller/login  
+- Admin → http://localhost:8000/admin/login  
+- Audit → http://localhost:8000/audit/login  
+- Staff → http://localhost:8000/staff/login  
+
+---
+
+## 🧮 Features Overview
+
+### 🛍️ Seller Dashboard
+- Product management  
+- Order tracking  
+- Revenue analytics  
+- Inventory management  
+
+### 🧑‍💼 Admin Dashboard
+- User management  
+- Seller approvals  
+- System analytics  
+- Platform management  
+
+### 🕵️ Audit Dashboard
+- Compliance monitoring  
+- Audit trails  
+- System health checks  
+- Report generation  
+
+### 👨‍🔧 Staff Dashboard
+- Task management  
+- Performance tracking  
+- Schedule management  
+- Team collaboration  
+
+---
+
+## 🧾 Troubleshooting
+
+If you encounter issues:
+
+Clear application cache:
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+- Check middleware registration in `Kernel.php`  
+- Verify database migrations ran successfully  
+- Ensure all model files exist in `app/Models/` directory  
+
+---
+
+## 💬 Support
+
+For issues and questions, please check the **GitHub repository Issues** section.
+
+---
